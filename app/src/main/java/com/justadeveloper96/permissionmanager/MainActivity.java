@@ -2,8 +2,11 @@ package com.justadeveloper96.permissionmanager;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableField;
 import android.os.Build;
@@ -86,7 +89,28 @@ public class MainActivity extends AppCompatActivity{
                 }
                 Toast.makeText(MainActivity.this,"Rejected "+s.substring(1),Toast.LENGTH_SHORT).show();
             }
-        });
+
+			@Override
+			public boolean interceptPermissionsRejected(@NonNull List<String> rejectedPerms, final int request_code) {
+				new AlertDialog.Builder(MainActivity.this)
+					.setTitle("Permissions")
+					.setMessage("Please grant all the permissions")
+					.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i) {
+							permissionHelper.requestPermission(needed_permissions.toArray(new String[needed_permissions.size()]), request_code);
+						}
+					})
+					.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i) {
+							dialogInterface.cancel();
+						}
+					})
+					.create().show();
+            	return true;
+			}
+		});
 
         binding.get.setOnClickListener(new View.OnClickListener() {
             @Override

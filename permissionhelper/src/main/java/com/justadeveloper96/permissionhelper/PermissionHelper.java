@@ -36,6 +36,7 @@ public class PermissionHelper {
     public interface PermissionsListener {
         void onPermissionGranted(int request_code);
         void onPermissionRejectedManyTimes(@NonNull List<String> rejectedPerms, int request_code);
+        boolean interceptPermissionsRejected(@NonNull List<String> rejectedPerms, int request_code);
     }
 
     private WeakReference<Activity> activity_view;
@@ -142,7 +143,9 @@ public class PermissionHelper {
             if (deniedpermissions.size() > 0) {
                 res = res.substring(1);
                 if (!never_ask_again) {
-                    getRequestAgainAlertDialog(getActivity(), res,requestCode);
+                	if(!getListener().interceptPermissionsRejected(deniedpermissions, requestCode)) {
+						getRequestAgainAlertDialog(getActivity(), res,requestCode);
+					}
                 } else {
                     goToSettingsAlertDialog(getActivity(), res,requestCode);
                 }
